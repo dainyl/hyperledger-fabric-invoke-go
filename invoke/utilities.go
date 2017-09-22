@@ -44,22 +44,22 @@ func Error(status int32, message string) pb.Response {
 }
 
 // PutJSON marshals the given object to json and writes it to the ledger.
-func PutJSON(stub shim.ChaincodeStubInterface, key string, value interface{}) error {
+func PutJSON(stub shim.ChaincodeStubInterface, key string, value interface{}) ([]byte, error) {
 	// serialise the record as json
 	var b []byte
 	var err error
 	if b, err = json.Marshal(value); err != nil {
-		logger.Error(err.Error())
-		return err
+		Logger.Error(err.Error())
+		return nil, err
 	}
 
 	// write the record to the chain
 	if err = stub.PutState(key, b); err != nil {
-		logger.Error(err.Error())
-		return err
+		Logger.Error(err.Error())
+		return nil, err
 	}
 
-	return nil
+	return b, nil
 }
 
 // GetJSON retrieves a value from the ledger and attempts to unmarshal it as json.
@@ -67,12 +67,12 @@ func GetJSON(stub shim.ChaincodeStubInterface, key string, valuePtr interface{})
 	var b []byte
 	var err error
 	if b, err = stub.GetState(key); err != nil {
-		logger.Errorf("error getting state of %s from ledger: %s", key, err.Error())
+		Logger.Errorf("error getting state of %s from ledger: %s", key, err.Error())
 		return err
 	}
 
 	if err = json.Unmarshal(b, valuePtr); err != nil {
-		logger.Errorf("error deserialising value of %s as json: %s", b, err.Error())
+		Logger.Errorf("error deserialising value of %s as json: %s", b, err.Error())
 		return err
 	}
 
@@ -83,7 +83,7 @@ func GetJSON(stub shim.ChaincodeStubInterface, key string, valuePtr interface{})
 // Result set is built and returned as a byte array containing the JSON results.
 func GetQueryResultForQueryString(stub shim.ChaincodeStubInterface, queryString string) ([]byte, error) {
 
-	logger.Debugf("getQueryResultForQueryString queryString:\n%s\n", queryString)
+	Logger.Debugf("getQueryResultForQueryString queryString:\n%s\n", queryString)
 
 	resultsIterator, err := stub.GetQueryResult(queryString)
 	if err != nil {
@@ -118,7 +118,7 @@ func GetQueryResultForQueryString(stub shim.ChaincodeStubInterface, queryString 
 	}
 	buffer.WriteString("]")
 
-	logger.Debugf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
+	Logger.Debugf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
 
 	return buffer.Bytes(), nil
 }
@@ -137,12 +137,12 @@ func GetCreatorCert(stub shim.ChaincodeStubInterface) (*x509.Certificate, error)
 		return nil, err
 	}
 
-	logger.Debugf("Creator Identity: %#v", id)
+	Logger.Debugf("Creator Identity: %#v", id)
 
 	// decode the contents of the .pem file stored in the identity
 	block, _ := pem.Decode(id.IdBytes)
 
-	logger.Debugf("Pem: %#v", block)
+	Logger.Debugf("Pem: %#v", block)
 
 	// parse the contents of the .pem as an x509 cert and return the result
 	return x509.ParseCertificate(block.Bytes)

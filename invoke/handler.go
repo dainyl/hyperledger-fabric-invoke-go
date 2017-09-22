@@ -30,10 +30,13 @@ type Middleware func(shim.ChaincodeStubInterface, []string, Handler) pb.Response
 // followed by the handler.
 func (h Handler) use(m ...Middleware) Handler {
 	// for each middleware, starting with the last listed
-	for i := len(m) - 1; i >= 0; i++ {
+	for i := len(m) - 1; i >= 0; i-- {
+		// make copies of the middleware and handler for use in the closure
+		tmpMW := m[i]
+		tmpH := h
 		// wrap the handler in the middleware
 		h = func(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-			return m[i](stub, args, h)
+			return tmpMW(stub, args, tmpH)
 		}
 	}
 

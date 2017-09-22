@@ -24,7 +24,7 @@ import (
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
 
-var logger = shim.NewLogger("invoke")
+var Logger = shim.NewLogger("invoke")
 
 // Router objects manage handlers and middleware for invoke calls.
 type Router struct {
@@ -65,8 +65,8 @@ func (r *Router) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	var ok bool
 	if fn, ok = r.invokeMap[function]; !ok {
 		// if the function was not in the invoke map, return an error
-		err := fmt.Errorf("invlaid invoke function %s", function)
-		logger.Error(err.Error())
+		err := fmt.Errorf("invalid invoke function \"%s\"", function)
+		Logger.Error(err.Error())
 		return Error(http.StatusBadRequest, err.Error())
 	}
 
