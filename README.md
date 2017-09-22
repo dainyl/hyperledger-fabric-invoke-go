@@ -169,19 +169,19 @@ func Error(status int32, msg string) pb.Response {...}
 ```
 It is recommended to import `net/http` and use the constant status codes exported by that library.
 
-### `PutJSON` and `GetJSON`
+### `invoke.PutJSON` and `invoke.GetJSON`
 
 Records on the ledger in Hyperledger Fabric are often stored in json format, especially when using CouchDB as the underlying ledger database. `PutJSON` and `GetJSON` combine json marhsal/unmarshal and accessing the ledger. `PutJSON` returns the json encoded byte array for use in `invoke.Success` payloads.
 
-### `GetQueryResultForQueryString`
+### `invoke.GetQueryResultForQueryString`
 
  The main advantage of using CouchDB as the underlying peer database is the ability to perform complex queries. `GetQueryResultForQueryString` takes a CouchDB query string and returns a json array of `{ key, value }` pairs, encoded as a byte array for use in `invoke.Success` payloads.
 
- ### `GetCreatorCert`
+ ### `invoke.GetCreatorCert`
 
  Extracts and parses the x509 certificate of the creator of the transaction. This is useful for implementing access control on chaincode functions
 
- ### `GetCreatorCommonName`
+ ### `invoke.GetCreatorCommonName`
 
  Extracts the common name field from the x509 certificate of the creator of the transaction. This is useful for implementing access control on chaincode functions
 
