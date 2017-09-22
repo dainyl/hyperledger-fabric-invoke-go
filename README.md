@@ -137,10 +137,8 @@ func main() {
 
 ### Provided Middleware Functions
 
-`ArgCounter` - Validates number of arguments passed to a function
-
-`JSONParser` - Parses an argument as json and stores the result in the context
-
+`ArgCounter` - Validates number of arguments passed to a function  
+`JSONParser` - Parses an argument as json and stores the result in the context  
 `TimestampParser` - Parses an argument as time.Time and stores the result in the context
 
 ## Utility Functions
