@@ -32,7 +32,10 @@ func main() {
     router = invoke.NewRouter()
 
     // add endpoints to the router
-    router.RegisterHandler("myEndpoint", myHandler)
+    router.RegisterHandler(
+        "myEndpoint",   // the function name that is called by the external client
+        myHandler,      // the handler to be run for this endpoint
+    )
 
     if err := shim.Start(new(MyChaincode)); err != nil {
         fmt.Printf("error starting MyChaincode: %s", err)
@@ -63,9 +66,9 @@ func main() {
 
     // or, register specific middleware for each endpoint
     router.registerHandler(
-        "myEndpoint",
-        myHandler,
-        argLogger
+        "myEndpoint",   // the function name that is called by the external client
+        myHandler,      // the handler to be run for this endpoint
+        argLogger,      // middleware function(s) attached to this endpoint
     ) 
 
     if err := shim.Start(new(MyChaincode)); err != nil {
@@ -90,21 +93,21 @@ func timestampParser(argIndex int, timeFormat string, contextKey string) Middlew
             err := fmt.Sprintf("argIndex %d was greater than length of args", argIndex)
             fmt.Println(err)
             return invoke.Error(http.StatusInternalServerError, fmt.Sprintf("error parsing time: %s", err))
-            }
+        }
 
-		// parse timestamp
-		var ts time.Time
-		var err error
-		if ts, err = time.Parse(timeFormat, args[argIndex]); err != nil {
-			fmt.Println(err)
-			return invoke.Error(http.StatusBadRequest, fmt.Sprintf("error parsing time string: %s", err.Error()))
-		}
+        // parse timestamp
+        var ts time.Time
+        var err error
+        if ts, err = time.Parse(timeFormat, args[argIndex]); err != nil {
+            fmt.Println(err)
+            return invoke.Error(http.StatusBadRequest, fmt.Sprintf("error parsing time string: %s", err.Error()))
+        }
 
-		// write timestamp to context
-		router.Context[contextKey] = ts
+        // write timestamp to context
+        router.Context[contextKey] = ts
 
-		// call next handler
-		return next(stub, args)
+        // call next handler
+        return next(stub, args)
     }
 }
 
