@@ -158,14 +158,14 @@ type Response struct {
 ```
 `github.com/hyperledger/fabric/core/chaincode/shim` provides convenience functions `Success` and `Error`:
 ```go
-func Success(payload []byte) pb.Response
-func Error(msg string) pb.Response
+func Success(payload []byte) pb.Response {...}
+func Error(msg string) pb.Response {...}
 ```
 These functions default to status codes of 200 and 500 respectively, however these codes often don't correctly reflect the success or error.
 Invoke offers two similar functions which allow specifying a response code:
 ```go
-func Success(status int32, payload []byte) pb.Response
-func Error(status int32, msg string) pb.Response
+func Success(status int32, payload []byte) pb.Response {...}
+func Error(status int32, msg string) pb.Response {...}
 ```
 It is recommended to import `net/http` and use the constant status codes exported by that library.
 
