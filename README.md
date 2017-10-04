@@ -139,7 +139,8 @@ func main() {
 
 `ArgCounter` - Validates number of arguments passed to a function  
 `JSONParser` - Parses an argument as json and stores the result in the context  
-`TimestampParser` - Parses an argument as time.Time and stores the result in the context
+`TimestampParser` - Parses an argument as time.Time and stores the result in the context  
+`TransactionTimestamp` - Extracts the transaction timestamp as time.Time and stores the result in the context. See the `GetTxTimestamp` method in [`ChaincodeStubInterface` godoc](https://godoc.org/github.com/hyperledger/fabric/core/chaincode/shim#ChaincodeStubInterface)
 
 ## Utility Functions
 

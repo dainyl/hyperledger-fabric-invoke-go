@@ -105,3 +105,23 @@ func TimestampParser(router Router, argIndex int, timeFormat string, contextKey 
 		return next(stub, args)
 	}
 }
+
+// TransactionTimestamp creates a middleware that will extract the transaction
+// timestamp and store it in the context under the given key as a time.Time
+func TransactionTimestamp(router Router, contextKey string) Middleware {
+	return func(stub shim.ChaincodeStubInterface, args []string, next Handler) pb.Response {
+		// get the timestamp from the transaction metadata
+		ts, err := stub.GetTxTimestamp()
+		if err != nil {
+			err = fmt.Errorf("error getting transaction timestamp: %s", err.Error())
+			Logger.Error(err)
+			return Error(http.StatusInternalServerError, err.Error())
+		}
+
+		// store the timestamp in the context under the given key
+		router.Context[contextKey] = time.Unix(ts.GetSeconds(), int64(ts.GetNanos()))
+
+		// call the next handler
+		return next(stub, args)
+	}
+}
