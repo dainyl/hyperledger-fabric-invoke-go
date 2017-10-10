@@ -14,7 +14,7 @@ import "github.ibm.com/bhaesler/hyperledger-fabric-invoke-go/invoke"
 type MyChaincode struct {}
 
 // declare the router as a global variable so it can be accessed by the Invoke function
-var router Router
+var router invoke.Router
 
 func (m *MyChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
     // manage invocations using the router
