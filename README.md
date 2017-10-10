@@ -27,7 +27,8 @@ func myHandler(stub shim.ChaincodeStubInterface, args []string) pb.Response {
     return invoke.Success(http.StatusOK, nil)
 }
 
-func main() {
+// it's useful to put this in a helper function for writing unit tests on your chaincode
+func initRouter() {
     // create the router
     router = invoke.NewRouter()
 
@@ -36,6 +37,11 @@ func main() {
         "myEndpoint",   // the function name that is called by the external client
         myHandler,      // the handler to be run for this endpoint
     )
+}
+
+func main() {
+    // setup the router
+    initRouter()
 
     if err := shim.Start(new(MyChaincode)); err != nil {
         fmt.Printf("error starting MyChaincode: %s", err)
@@ -60,7 +66,9 @@ func argLogger(stub shim.ChaincodeStubInterface, args []string, next invoke.Hand
     next(stub, args)
 }
 
-func main() {
+func initRouter() {
+    router = invoke.NewRouter()
+
     // register global middleware (runs for every endpoint)
     router.Use(argLogger)
 
@@ -70,6 +78,10 @@ func main() {
         myHandler,      // the handler to be run for this endpoint
         argLogger,      // middleware function(s) attached to this endpoint
     ) 
+}
+
+func main() {
+    initRouter()
 
     if err := shim.Start(new(MyChaincode)); err != nil {
         fmt.Printf("error starting MyChaincode: %s", err)
@@ -121,13 +133,18 @@ func myHandler(stub shim.ChaincodeStubInterface, args []string) pb.Response {
     return invoke.Success(http.StatusOK, nil)
 }
 
-
-func main() {
+func initRouter() {
+    router = invoke.NewRouter()
+    
     router.RegisterHandler(
         "myEndpoint",
         myHandler,
         timestampParser(1, time.RFC3339, "timestamp")
     )
+}
+
+func main() {
+    initRouter()
 
     if err := shim.Start(new(MyChaincode)); err != nil {
         fmt.Printf("error starting MyChaincode: %s", err)
