@@ -35,6 +35,8 @@ func ArgCounter(expected ...string) Middleware {
 				}
 			}
 
+			res.WriteString(fmt.Sprintf(", got %#v", args))
+
 			err := res.String()
 
 			// log and return the error
