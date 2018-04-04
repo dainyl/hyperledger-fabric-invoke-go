@@ -91,7 +91,7 @@ func main() {
 
 ### Complex Middleware Function
 
-Sometimes data created in a middleware function needs to passed through to subsequent middleware or the handler. This is achieved by using the router's `Context`, a `map[string]interface{}`
+Sometimes data created in a middleware function needs to passed through to subsequent middleware or the handler. This is achieved by using the router's `GetContext` method, which returns a `map[string]interface{}`
 
 ```go
 // timestampParser generates a middleware function that will attempt to parse
@@ -116,7 +116,7 @@ func timestampParser(argIndex int, timeFormat string, contextKey string) Middlew
         }
 
         // write timestamp to context
-        router.Context[contextKey] = ts
+        router.GetContext(stub)[contextKey] = ts
 
         // call next handler
         return next(stub, args)
@@ -124,9 +124,9 @@ func timestampParser(argIndex int, timeFormat string, contextKey string) Middlew
 }
 
 func myHandler(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-    // retrieve the timestamp from the Context. A type assertion is required
+    // retrieve the timestamp from the context. A type assertion is required
     // to convert from interface{} to time.Time
-    ts := router.Context["timestamp"].(time.Time)
+    ts := router.GetContext(stub)["timestamp"].(time.Time)
 
     // use timestamp in handler logic
 

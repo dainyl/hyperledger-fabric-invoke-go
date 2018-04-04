@@ -73,7 +73,7 @@ func JSONParser(router Router, argIndex int, contextKey string, valueType reflec
 		}
 
 		// store result in context
-		router.Context[contextKey] = jsonValue
+		router.GetContext(stub)[contextKey] = jsonValue
 
 		// call next handler
 		return next(stub, args)
@@ -101,7 +101,7 @@ func TimestampParser(router Router, argIndex int, timeFormat string, contextKey 
 		}
 
 		// write timestamp to context
-		router.Context[contextKey] = ts
+		router.GetContext(stub)[contextKey] = ts
 
 		// call next handler
 		return next(stub, args)
@@ -121,7 +121,7 @@ func TransactionTimestamp(router Router, contextKey string) Middleware {
 		}
 
 		// store the timestamp in the context under the given key
-		router.Context[contextKey] = time.Unix(ts.GetSeconds(), int64(ts.GetNanos()))
+		router.GetContext(stub)[contextKey] = time.Unix(ts.GetSeconds(), int64(ts.GetNanos()))
 
 		// call the next handler
 		return next(stub, args)

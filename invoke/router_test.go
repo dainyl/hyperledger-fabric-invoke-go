@@ -12,10 +12,10 @@ import (
 func TestNewRouter(t *testing.T) {
 	router := NewRouter()
 
-	notNil(t, "router.Context", router.Context)
+	notNil(t, "router.context", router.context)
 	notNil(t, "router.invokeMap", router.invokeMap)
 	notNil(t, "router.middlewareChain", router.middlewareChain)
-	eq(t, "len(router.Context)", 0, len(router.Context))
+	eq(t, "len(router.context)", 0, len(router.context))
 	eq(t, "len(router.invokeMap)", 0, len(router.invokeMap))
 	eq(t, "len(router.middlewareChain)", 0, len(router.middlewareChain))
 }
@@ -64,7 +64,6 @@ var invokeTests = []struct {
 func TestInvoke(t *testing.T) {
 	router := NewRouter()
 	key := "test"
-	router.Context[key] = make([]int, 0)
 	endpoint := "endpoint"
 	router.Use(mwIntAppender(router, key, 1))
 	router.RegisterHandler(
@@ -76,6 +75,8 @@ func TestInvoke(t *testing.T) {
 
 	for _, v := range invokeTests {
 		stub := shim.NewMockStub("test", new(testCC))
+		// this is needed to set the transaction ID
+		stub.MockTransactionStart("123")
 		// this is only needed to set the args, which is the only part the router needs
 		stub.MockInvoke("text", [][]byte{[]byte(v.endpoint)})
 		rsp := router.Invoke(stub)

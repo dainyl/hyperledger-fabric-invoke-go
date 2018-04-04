@@ -28,7 +28,7 @@ var Logger = shim.NewLogger("invoke")
 
 // Router objects manage handlers and middleware for invoke calls.
 type Router struct {
-	Context         map[string]interface{}
+	context         map[string]map[string]interface{}
 	invokeMap       map[string]Handler
 	middlewareChain []Middleware
 }
@@ -36,7 +36,7 @@ type Router struct {
 // NewRouter returns a new router with no handlers or middleware.
 func NewRouter() Router {
 	return Router{
-		Context:         make(map[string]interface{}),
+		context:         make(map[string]map[string]interface{}),
 		invokeMap:       make(map[string]Handler),
 		middlewareChain: make([]Middleware, 0),
 	}
@@ -57,6 +57,9 @@ func (r *Router) RegisterHandler(functionName string, h Handler, mws ...Middlewa
 
 // Invoke calls the appropriate handler for this invoke call.
 func (r *Router) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+	// create context
+	r.context[stub.GetTxID()] = make(map[string]interface{})
+
 	// get arguments to invoke
 	function, args := stub.GetFunctionAndParameters()
 
@@ -76,6 +79,14 @@ func (r *Router) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	// execute invoke function
 	result := fn(stub, args)
 
+	// clean up context
+	delete(r.context, stub.GetTxID())
+
 	// return result
 	return result
+}
+
+// GetContext returns the context for the transaction
+func (r *Router) GetContext(stub shim.ChaincodeStubInterface) map[string]interface{} {
+	return r.context[stub.GetTxID()]
 }
